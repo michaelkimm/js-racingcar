@@ -1,10 +1,12 @@
-import start from "../src/main";
+import Car, { makeCar } from "../src/car";
+import { getRaceCount } from "../src/getUserInput.js";
+import { race } from "../src/race.js";
 
 jest.mock("readline");
 
 import readline from "readline";
 
-describe("자동차 경주 게임이 잘 진행되는지 테스트한다.", () => {
+describe("잘못된 값을 입력했을때 프로그램이 종료되는지 확인한다.", () => {
   let mockInterface;
 
   beforeEach(() => {
@@ -19,31 +21,35 @@ describe("자동차 경주 게임이 잘 진행되는지 테스트한다.", () =
     jest.restoreAllMocks();
   });
 
-  it("이름을 입력하면 자동으로 경주가 시작됩니다.", async () => {
+  test("사용자가 입력한 차의 이름이 5글자를 넘을때 에러가 발생한한다.", async () => {
     mockInterface.question.mockImplementation((query, callback) => {
-      callback("기아");
+      callback("현대기아자동차");
     });
-    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
 
-    await start();
+    await expect(makeCar()).rejects.toThrow(
+      "차 이름은 5글자 이하만 가능합니다."
+    );
 
-    expect(consoleSpy).toHaveBeenCalledWith("경주 시작!");
+    mockInterface.question.mockImplementation((query, callback) => {
+      callback("현대자동차");
+    });
+
+    await expect(makeCar()).resolves.toBeDefined();
   });
 
-  it("1칸씩 전진한 흔적(" - ")이 콘솔창에 남는다.", async () => {
+  test("사용자가 숫자 이외의 값을 입력했을때 에러가 발생한한다.", async () => {
     mockInterface.question.mockImplementation((query, callback) => {
-      callback("기아");
+      callback("가나다");
     });
 
-    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    await expect(getRaceCount()).rejects.toThrow(
+      "횟수는 숫자만 입력가능합니다."
+    );
 
-    await start();
+    mockInterface.question.mockImplementation((query, callback) => {
+      callback("5");
+    });
 
-    expect(consoleSpy).toHaveBeenNthCalledWith(1, "경주 시작!");
-    expect(consoleSpy).toHaveBeenNthCalledWith(2, "기아 : -");
-    expect(consoleSpy).toHaveBeenNthCalledWith(3, "기아 : --");
-    expect(consoleSpy).toHaveBeenNthCalledWith(4, "기아 : ---");
-    expect(consoleSpy).toHaveBeenNthCalledWith(5, "기아 : ----");
-    expect(consoleSpy).toHaveBeenNthCalledWith(6, "기아 : -----");
+    await expect(getRaceCount()).resolves.toBeDefined();
   });
 });

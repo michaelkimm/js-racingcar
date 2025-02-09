@@ -1,14 +1,12 @@
-import { makeCar, drawSkidMark } from "./car.js";
+import { makeCar } from "./car.js";
+import { race, findFarthestCar } from "./race.js";
+import { getRaceCount } from "./getUserInput.js";
 
 export default async function start() {
   const cars = await makeCar();
 
-  console.log("경주 시작!");
-
-  for (let i = 0; i < 5; i++) {
-    cars.forEach((car) => {
-      car.go();
-      console.log(`${car.name} : ${drawSkidMark(car.state)}`);
-    });
-  }
+  const raceCount = await getRaceCount("시도할 회수는 몇회인가요? ");
+  race(raceCount, cars);
 }
+
+// await start();
