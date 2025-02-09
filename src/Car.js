@@ -1,18 +1,18 @@
+import { TRACK_MARK, CAR_MOVE_PER_RACING } from "./constants.js";
+import Validator from "./Validator.js";
+
 class Car {
   #name;
   #position;
 
-  constructor() {
-    this.#name = "";
+  constructor(name) {
+    Validator.validateValidCarName(name);
+    this.#name = name;
     this.#position = 0;
   }
 
-  changeName(name) {
-    this.#name = name;
-  }
-
   move() {
-    this.#position++;
+    this.#position += CAR_MOVE_PER_RACING;
   }
 
   getName() {
@@ -21,6 +21,10 @@ class Car {
 
   getCurrentPosition() {
     return this.#position;
+  }
+
+  printTrack() {
+    console.log(`${this.#name} : ${TRACK_MARK.repeat(this.#position)}`);
   }
 }
 
