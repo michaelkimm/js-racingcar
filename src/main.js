@@ -1,34 +1,17 @@
-import { getCarName } from './input.js';
-import Race from './race.js';
+import { getCarName, getRaceRoundCount } from './input.js';
+import { consoleRaceResult } from './output.js';
 
-function formatRaceResults(results) {
-  let result = [];
-
-  results.forEach((round) => {
-    round.forEach(({ name, location }) => {
-      result.push(`${name} : ${'-'.repeat(location)}`);
-    });
-
-    result.push('');
-  });
-
-  return result;
-}
+import Race from './domain/Race.js';
+import Car from './domain/Car.js';
 
 async function play() {
-  try {
-    const name = await getCarName();
+  const names = await getCarName();
+  const count = await getRaceRoundCount();
 
-    console.log('\n실행 결과');
+  const cars = names.map((name) => new Car(name));
+  const results = new Race(cars).start(count);
 
-    const results = new Race(name).start();
-    const formattedResult = formatRaceResults(results);
-    formattedResult.forEach((message) => console.log(message));
-
-    console.log('경주를 완료했습니다');
-  } catch (error) {
-    console.error(error);
-  }
+  if (results.length > 0) consoleRaceResult(results);
 }
 
 play();
