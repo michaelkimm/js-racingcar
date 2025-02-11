@@ -1,60 +1,22 @@
 import { getRandomNumber } from '../../utils/index.js';
+import {
+  renderCarMovementInfo,
+  renderCurrentLapEnd,
+  renderGameEnd,
+  renderGameResult,
+} from '../../view/game/index.js';
 import Car from '../car/service.js';
 
-const DEFAULT_LAP = 5;
-const MIN_MOVEMENT_THRESHOLD = 4;
-
 export default class Game {
+  static DEFAULT_LAP = 5;
+  static MIN_MOVEMENT_THRESHOLD = 4;
+
   #players = [];
   #lap = 0;
 
-  constructor({ names, lap = DEFAULT_LAP }) {
+  constructor({ names, lap = Game.DEFAULT_LAP }) {
     this.#players = names;
     this.#lap = lap;
-  }
-
-  /**
-   * 현재 바퀴 수가 끝났다는 안내
-   */
-  #announceCurrentLapEnd() {
-    console.log('');
-  }
-
-  /**
-   * 게임의 결과를 안내
-   */
-  #announceGameResult() {
-    console.log('');
-    console.log('실행 결과');
-  }
-
-  /**
-   * 게임이 끝났다는 걸 안내
-   */
-  #announceGameEnd(winners) {
-    console.log(`${winners}가 최종 우승했습니다.`);
-  }
-
-  /**
-   * 해당 바퀴 떄, 자동차가 얼만큼 달리고 있는지 안내
-   *
-   * @param {string} name 자동차 이름
-   * @param {number} location 자동차의 자동차 위치
-   */
-  #announcePlayerMovedTrack(name, location) {
-    const movedTrack = this.drawMovedTrack(location);
-
-    console.log(`${name} : ${movedTrack}`);
-  }
-
-  /**
-   * 자동차 움직임 궤도를 그리는 함수
-   *
-   * @param {number} location 위치 값
-   * @returns 움직인 궤도
-   */
-  drawMovedTrack(location) {
-    return Array.from({ length: location }, () => '-').join('');
   }
 
   /**
@@ -116,14 +78,17 @@ export default class Game {
   /**
    * 자동차의 움직임 여부을 결정하는 함수
    *
-   * @param {Car} car 자동차 정보
+   * @param {Object} 자동차 정보 및 임계치
    * @param {function(Object): void} onMove 움직일 필요가 있어 작동되는 callback
    * @param {function(Object): void} onStay 움직일 필요가 없어 작동되는 callback
    * @returns 자동차 이름과 자동차의 위치 정보
    */
-  determineCarMovement(car, onMove, onStay) {
-    const randomNumber = getRandomNumber();
-    if (randomNumber < MIN_MOVEMENT_THRESHOLD) {
+  determineCarMovement(
+    { car, threshold = Game.MIN_MOVEMENT_THRESHOLD },
+    onMove,
+    onStay,
+  ) {
+    if (threshold < Game.MIN_MOVEMENT_THRESHOLD) {
       return onStay(car);
     }
 
@@ -136,22 +101,23 @@ export default class Game {
   start() {
     const cars = this.#players.map((name) => new Car({ name }));
 
-    this.#announceGameResult();
+    renderGameResult();
 
     for (let lap = 0; lap < this.#lap; lap++) {
       cars.forEach((car) => {
+        const threshold = getRandomNumber();
         const { name, location } = this.determineCarMovement(
-          car,
+          { car, threshold },
           this.handleCarMove,
           this.handleCarStay,
         );
 
-        this.#announcePlayerMovedTrack(name, location);
+        renderCarMovementInfo(name, location);
       });
-      this.#announceCurrentLapEnd();
+      renderCurrentLapEnd();
     }
 
-    const winners = this.getWinners(cars);
-    this.#announceGameEnd(winners);
+    const winners = this.getWinnersName(cars);
+    renderGameEnd(winners);
   }
 }
