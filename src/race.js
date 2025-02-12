@@ -1,23 +1,45 @@
-import Situation from "./situation.js";
-
 class Race {
 
     constructor(cars, moveCount) {
+        this.maxDistance = 0;
+        this.history = []
+        this.winners = [];
         this.cars = cars;
         this.moveCount = moveCount;
-        this.situation = new Situation(this);
     }
 
     startRace() {
-        for (let i = 0; i < this.moveCount; i++) {
+        Array.from({ length: this.moveCount }).forEach(() => {
             this.moveForwardCars();
-            this.situation.recordSituation();
-        }
+            this.recordHistory();
+        });
     }
 
     moveForwardCars() {
-        for (let car of this.cars) {
+        this.cars.forEach(car => {
             car.moveForward();
+            this.compareDistance(car.distance);
+        });
+    }
+
+    recordHistory() {
+        this.history.push(this.cars.map(car => ({
+            name: car.name,
+            distance: car.distance
+        })));
+    }
+    getWinner() {
+        this.cars.map(car => this.compareMaxDistance(car));
+        return this.winners;
+    }
+
+    compareDistance(distance) {
+        this.maxDistance = (this.maxDistance < distance) ? distance : this.maxDistance;
+    }
+
+    compareMaxDistance(car) {
+        if(this.maxDistance === car.distance) {
+            this.winners.push(car.name)
         }
     }
 

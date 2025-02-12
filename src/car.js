@@ -1,3 +1,5 @@
+import * as rand from "./random.js"
+
 class Car {
 
     static MINIMUM_LENGTH = 1;
@@ -13,7 +15,9 @@ class Car {
     }
 
     moveForward() {
-        this.distance += 1;
+        if(rand.randMoveForward()) {
+            this.distance += 1;
+        }
     }
 
     confirmMinimumLength(name) {

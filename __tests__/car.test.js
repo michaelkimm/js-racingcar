@@ -4,6 +4,8 @@ describe("Car Class 테스트", () => {
     let car;
 
     beforeEach(() => {
+        jest.clearAllMocks(); 
+        jest.spyOn(Math, "random").mockReturnValue(0.4);
         car = new Car("NEXT");
     });
 

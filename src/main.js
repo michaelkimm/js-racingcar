@@ -6,13 +6,13 @@ const main = async () => {
     const readline = io.createInterface();
 
     const names = await io.receivedCarNames(readline);
+    const count = await io.receivedAttemptCount(readline);
 
     const cars = [];
-    for (const name of names) {
-        cars.push(new Car(name));
-    }
+
+    names.forEach(name => cars.push(new Car(name)))
     
-    const race = new Race(cars, 5);
+    const race = new Race(cars, count);
     race.startRace();
     
     io.raceResult(race);
@@ -21,4 +21,3 @@ const main = async () => {
 }
 
 main();
-
