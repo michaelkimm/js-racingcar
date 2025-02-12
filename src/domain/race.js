@@ -1,48 +1,53 @@
 import Car from "../Car.js";
 
-import { printWithCarName, isNameLessThanFive } from "../util/index.js";
-import { LOCATION_POINT } from "../rule.js";
-
-export const getCars = async (read) => {
-  const carName = await read.question("경주할 자동차 이름을 입력하세요.\n");
-  return carName;
-};
+import {
+  isNameLessThanThreshold,
+  printExceedNameLength,
+  printMessage,
+  printWinnerMessage,
+  printWithCarName,
+  SEPARATED_COMMA,
+  isRandomOverThanInteger
+} from "../util/index.js";
+import { DIRECTION, FORWARD_CONDITION, LOCATION_POINT, NAME_RULE } from "../rule.js";
 
 export const checkCarNames = (cars) => {
-  if (isNameLessThanFive(cars) === false) {
-    throw new Error("자동차 이름이 5자를 초과합니다.");
+  if (isNameLessThanThreshold(cars, NAME_RULE.length) === false) {
+    throw new Error(printExceedNameLength(NAME_RULE.length));
   }
 };
 
 export const makeCarObject = (cars, position) =>
   cars.map((name) => new Car(name, position));
 
-export const isForwardOverFour = () => Math.floor(Math.random() * 10) >= 4;
 
 export const isForward = (car) => {
-  const randomNumber = Math.floor(Math.random() * 3) + 1;
-
+  
   const isCar = car instanceof Car;
+  if (isCar && isRandomOverThanInteger(FORWARD_CONDITION.min, FORWARD_CONDITION.max, FORWARD_CONDITION.threshold)) {
 
-  // x - 1, y - 2, z - 3
-  if (isCar && isForwardOverFour()) {
-    return randomNumber;
+    // x - 1, y - 2, z - 3
+    const DIRECTION_LENGTH = Object.keys(DIRECTION).length
+    const xyzDirection = Math.floor(Math.random() * DIRECTION_LENGTH) + 1;
+    return xyzDirection;
   }
 
   // stop - 0
-  return 0;
+  return DIRECTION.stop;
 };
 
-const goDirection = (car) => {
-  if (isForward(car) === 1) {
+
+export const goDirection = (car, direction) => {
+  
+  if (direction === DIRECTION.x) {
     car.goToX();
     return LOCATION_POINT.x;
   }
-  if (isForward(car) === 2) {
+  if (direction === DIRECTION.y) {
     car.goToY();
     return LOCATION_POINT.y;
   }
-  if (isForward(car) === 3) {
+  if (direction === DIRECTION.z) {
     car.goToZ();
     return LOCATION_POINT.z;
   }
@@ -55,7 +60,9 @@ export const printWinners = (gameResults) => {
 
   gameResults.forEach((perGameResult) => {
     const { name, progress } = perGameResult;
-    const filteredResult = progress.filter((val) => val !== "O").length;
+    const filteredResult = progress.filter(
+      (val) => val !== LOCATION_POINT.stop,
+    ).length;
     result[name] = filteredResult;
   });
 
@@ -67,9 +74,9 @@ export const printWinners = (gameResults) => {
     .filter(([, value]) => value === maxValue)
     .map((item) => item.at(0));
 
-  const commaJoinedString = filteredWinners.join(",");
+  const commaJoinedString = filteredWinners.join(SEPARATED_COMMA);
 
-  console.log(`${commaJoinedString}가 최종 우승했습니다.`);
+  console.log(printWinnerMessage(commaJoinedString));
 
   return filteredWinners;
 };
@@ -83,17 +90,19 @@ export const race = (carObjs, gameCount) => {
 
   Array.from({ length: gameCount }).forEach(() => {
     const results = totalResult.map((car) => {
-      const newProgress = goDirection(car.carObject);
+      const newProgress = goDirection(car.carObject, isForward(car.carObject));
       const carResult = {
         ...car,
         progress: [...car.progress, newProgress],
       };
+
       printWithCarName(carResult.name, carResult.progress);
+
       return carResult;
     });
 
     totalResult = results;
+    printMessage("");
   });
-
   return totalResult;
 };
