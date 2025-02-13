@@ -18,7 +18,7 @@ class Race {
     moveForwardCars() {
         this.cars.forEach(car => {
             car.moveForward();
-            this.compareDistance(car.distance);
+            this.confirmHighestDisance(car.distance);
         });
     }
 
@@ -29,15 +29,15 @@ class Race {
         })));
     }
     getWinner() {
-        this.cars.map(car => this.compareMaxDistance(car));
+        this.cars.map(car => this.confirmWinner(car));
         return this.winners;
     }
 
-    compareDistance(distance) {
-        this.maxDistance = (this.maxDistance < distance) ? distance : this.maxDistance;
+    confirmHighestDisance(distance) {
+        this.maxDistance = Math.max(this.maxDistance, distance)
     }
 
-    compareMaxDistance(car) {
+    confirmWinner(car) {
         if(this.maxDistance === car.distance) {
             this.winners.push(car.name)
         }

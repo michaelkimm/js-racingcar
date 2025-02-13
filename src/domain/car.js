@@ -1,4 +1,4 @@
-import * as rand from "./random.js"
+import * as rand from "../util/random.js"
 
 class Car {
 
@@ -15,7 +15,7 @@ class Car {
     }
 
     moveForward() {
-        if(rand.randMoveForward()) {
+        if(rand.randMoveForward(10, 4)) {
             this.distance += 1;
         }
     }
