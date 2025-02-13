@@ -1,64 +1,93 @@
-import Car from "../src/Car";
-import RacingGame from "../src/RacingGame";
+import Car from "../src/domain/Car";
+import RacingGame, { InvalidRacingTotalRound } from "../src/domain/RacingGame";
 
 describe("자동차 경주 테스트", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("자동차 경주는 기본적으로 최대 5라운드로 진행된다.", () => {
     const cars = [new Car("벤츠"), new Car("BMW"), new Car("아우디")];
 
     const racingGame = new RacingGame(cars);
-    const raceIterator = racingGame.startRace();
+    const raceIterator = racingGame.runRace();
 
-    while (!raceIterator.next().done) {}
-
-    expect(racingGame.round).toBe(5);
+    expect([...raceIterator].length).toBe(5);
   });
 
   it("자동차 경주는 설정된 라운드만큼 진행된다.", () => {
     const cars = [new Car("벤츠"), new Car("BMW"), new Car("아우디")];
 
     const racingGame = new RacingGame(cars, 7);
-    const raceIterator = racingGame.startRace();
+    const raceIterator = racingGame.runRace();
 
-    while (!raceIterator.next().done) {}
-
-    expect(racingGame.round).toBe(7);
+    expect([...raceIterator].length).toBe(7);
   });
 
-  test("자동차는 기본적으로 각 라운드마다 1칸씩 전진한다.", () => {
-    const cars = [new Car("벤츠"), new Car("BMW"), new Car("아우디")];
+  it.each([Number.NaN, -1, 0, 3.5, "4", true])(
+    "자동차 경주의 총 라운드 값은 1 이상의 정수여야 한다. (총 라운드: %p)",
+    (totalRound) => {
+      const cars = [new Car("벤츠"), new Car("BMW"), new Car("아우디")];
 
-    const totalRound = 6;
-    const racingGame = new RacingGame(cars, totalRound);
-    const raceIterator = racingGame.startRace();
+      expect(() => new RacingGame(cars, totalRound)).toThrow(
+        InvalidRacingTotalRound
+      );
+    }
+  );
+
+  it("자동차는 기본적으로 각 라운드마다 1칸씩 전진한다.", () => {
+    const cars = [new Car("벤츠"), new Car("BMW"), new Car("아우디")];
 
     cars.forEach((car) => expect(car.position).toBe(0));
 
-    for (let position = 1; position <= totalRound; position++) {
-      const result = raceIterator.next().value;
-      result.forEach((car) => expect(car.position).toBe(position));
-    }
+    const racingGame = new RacingGame(cars, 6);
+    const raceResults = [...racingGame.runRace()];
+
+    // 예상 자동차 위치 변화
+    const expectedPositions = [
+      [1, 1, 1],
+      [2, 2, 2],
+      [3, 3, 3],
+      [4, 4, 4],
+      [5, 5, 5],
+      [6, 6, 6],
+    ];
+
+    raceResults.forEach((roundResult, roundIndex) => {
+      roundResult.forEach((car, carIndex) => {
+        expect(car.position).toBe(expectedPositions[roundIndex][carIndex]);
+      });
+    });
   });
 
-  test("자동차는 각 라운드에서 전진 조건에 따라 전진하거나 전진하지 않는다.", () => {
+  it("자동차는 각 라운드에서 전진 조건에 따라 전진하거나 전진하지 않는다.", () => {
     const cars = [new Car("벤츠"), new Car("BMW"), new Car("아우디")];
 
-    const racingGame = new RacingGame(cars, 5, () => Math.random() >= 0.5);
-    const raceIterator = racingGame.startRace();
+    const raceConditions = [
+      [true, false, true], // 라운드 1: 벤츠, 아우디 전진, BMW 멈춤
+      [false, true, true], // 라운드 2: BMW, 아우디 전진, 벤츠 멈춤
+      [false, true, false], // 라운드 3: BMW 전진, 벤츠, 아우디 멈춤
+    ].flat();
 
-    jest.spyOn(Math, "random").mockReturnValue(0.5);
+    const canMove = () => raceConditions.shift();
+    const racingGame = new RacingGame(cars, 3, canMove);
 
-    const roundResult1 = raceIterator.next().value;
-    roundResult1.forEach((car) => expect(car.position).toBe(1));
+    const raceResults = [...racingGame.runRace()];
 
-    jest.spyOn(Math, "random").mockReturnValue(0.2);
+    const expectedPositions = [
+      [1, 0, 1], // (라운드 1) 벤츠: 전진, BMW: 멈춤, 아우디: 전진
+      [1, 1, 2], // (라운드 2) 벤츠: 멈춤, BMW: 전진, 아우디: 전진
+      [1, 2, 2], // (라운드 3) 벤츠: 멈춤, BMW: 전진, 아우디: 멈춤
+    ];
 
-    const roundResult2 = raceIterator.next().value;
-    roundResult2.forEach((car) => expect(car.position).toBe(1));
-
-    jest.restoreAllMocks();
+    raceResults.forEach((roundResult, roundIndex) => {
+      roundResult.forEach((car, carIndex) => {
+        expect(car.position).toBe(expectedPositions[roundIndex][carIndex]);
+      });
+    });
   });
 
-  test("자동차 경주 우승자는 가장 멀리 전진한 자동차들이다.", () => {
+  it("자동차 경주 우승자는 가장 멀리 전진한 자동차들이다.", () => {
     const cars = [new Car("벤츠"), new Car("BMW"), new Car("아우디")];
 
     const racingGame = new RacingGame(cars);

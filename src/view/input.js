@@ -26,24 +26,3 @@ export const getTrialCountFromInput = async (readline) => {
 
   return trial;
 };
-
-export const printRacingGameResult = (racingGame) => {
-  console.log("\n실행 결과");
-
-  const raceIterator = racingGame.startRace();
-
-  for (const roundResult of raceIterator) {
-    printCarPositions(roundResult);
-  }
-
-  const winners = racingGame.getWinners();
-
-  console.log(`${winners.join(", ")}가 최종 우승했습니다.`);
-};
-
-const printCarPositions = (cars) => {
-  for (const { name, position } of cars) {
-    console.log(`${name} : ${"-".repeat(position)}`);
-  }
-  console.log("");
-};
