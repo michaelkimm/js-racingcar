@@ -1,13 +1,14 @@
-class Car {
-  constructor(name) {
-    this.name = name;
-  }
+import { MAX_LENGTH } from "./constants/index.js";
+import Race from "./services/race.js";
 
-  position = 0;
+// export default function RaceGame(input) {
+//   // constructor(input) {
+//   //   const parser = new ParseCarNames(input);
+//   //   const carNames = parser.parse();
+//   //   this.carNames = carNames;
+//   //   this.cars = carNames.map((carName) => new Car(carName));
+//   // }
+// }
 
-  move() {
-    this.position += 1;
-  }
-}
-
-export default Car;
+const race = new Race("boky");
+console.log(race.start());
