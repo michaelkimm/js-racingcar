@@ -1,16 +1,23 @@
-export class Car {
-  name;
-  position = 0;
+import { startRace } from './core/services/race.js';
+import readLineAsync from './utils/readLineAsync.js';
+import { TOTAL_ROUNDS } from './constants.js';
+import { validateCarNames } from './validation.js';
+import { RaceView } from './ui/output.js';
 
-  constructor(name) {
-    if (!name) {
-      throw new Error('car name is required');
-    }
+// 입출력 예시
+async function play() {
+  try {
+    const input = await readLineAsync(
+      '자동차 이름을 입력하세요 (쉼표로 구분해주세요) > '
+    );
+    const carNames = input.split(',').map((name) => name.trim());
 
-    this.name = name;
-  }
+    validateCarNames(carNames);
 
-  move() {
-    this.position += 1;
+    startRace(carNames, TOTAL_ROUNDS, RaceView);
+  } catch (error) {
+    console.error(error.message);
   }
 }
+
+play();
