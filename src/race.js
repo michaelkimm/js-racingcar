@@ -1,15 +1,20 @@
-class Race {
-  static RaceMaxCount = 5;
+import generateRandomNumber from './shared/generateRandomNumber.js';
 
-  constructor(cars) {
+class Race {
+  static boundaryNumber = 3;
+
+  RaceMaxCount = 5;
+
+  constructor(cars, count) {
     this.cars = cars;
     this.result = [];
+    this.RaceMaxCount = count;
   }
 
   startRace() {
     let i = 0;
 
-    while (Race.RaceMaxCount > i) {
+    while (this.RaceMaxCount > i) {
       this.moveCars();
       this.setTrajectory(i);
 
@@ -20,14 +25,33 @@ class Race {
 
   moveCars() {
     this.cars.forEach((car) => {
-      car.moveForward();
-      Race.racePrint(car);
+      if (generateRandomNumber() > Race.boundaryNumber) {
+        car.moveForward();
+      }
     });
   }
 
-  static racePrint(car) {
-    console.log(`${car.getName()} : ${'-'.repeat(car.getLocation())}`);
-    return `${car.getName()} : ${'-'.repeat(car.getLocation())}`;
+  getWinner() {
+    const { trajectory } = this.result[this.RaceMaxCount - 1];
+
+    const { winners } = trajectory.reduce(
+      (acc, { name, location }) => {
+        if (location > acc.max) {
+          return { max: location, winners: [name] };
+        }
+        if (location === acc.max) {
+          acc.winners.push(name);
+        }
+        return acc;
+      },
+      { max: 0, winners: [] },
+    );
+
+    return winners.join(', ');
+  }
+
+  getTrajectory() {
+    return this.result;
   }
 
   setTrajectory(round) {
@@ -38,10 +62,6 @@ class Race {
         location: car.getLocation(),
       })),
     });
-  }
-
-  getTrajectory() {
-    return this.result;
   }
 }
 
