@@ -1,17 +1,25 @@
-import { getCarName, getRaceRoundCount } from './input.js';
-import { consoleRaceResult } from './output.js';
+import { inputCarNames, inputRaceRoundCount } from "./view/input.js";
+import { consoleRaceResult } from "./view/output.js";
 
-import Race from './domain/Race.js';
-import Car from './domain/Car.js';
+import Race from "./domain/Race.js";
+import RaceCondition from "./domain/RaceCondition.js";
+import Car from "./domain/Car.js";
 
 async function play() {
-  const names = await getCarName();
-  const count = await getRaceRoundCount();
+  try {
+    const names = await inputCarNames();
+    const cars = names.map((name) => new Car(name));
 
-  const cars = names.map((name) => new Car(name));
-  const results = new Race(cars).start(count);
+    const count = await inputRaceRoundCount();
+    const race = new Race(cars, count);
 
-  if (results.length > 0) consoleRaceResult(results);
+    const results = race.start(count, new RaceCondition().check);
+    const winners = race.getWinners();
+
+    consoleRaceResult(results, winners);
+  } catch {
+    process.exit();
+  }
 }
 
 play();
