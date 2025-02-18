@@ -40,6 +40,21 @@ describe('Race Class', () => {
         'At least one car must be provided'
       );
     });
+
+    test('should throw an error if rounds is not a positive integer', () => {
+      expect(() => new Race(cars, -1)).toThrow(
+        'Rounds must be a positive integer'
+      );
+      expect(() => new Race(cars, 0)).toThrow(
+        'Rounds must be a positive integer'
+      );
+      expect(() => new Race(cars, 'five')).toThrow(
+        'Rounds must be a positive integer'
+      );
+      expect(() => new Race(cars, 1.1)).toThrow(
+        'Rounds must be a positive integer'
+      );
+    });
   });
 
   describe('Race Progression', () => {
@@ -76,6 +91,32 @@ describe('Race Class', () => {
         expect(car).toHaveProperty('name', correctCarNames[index]);
         expect(car).toHaveProperty('position');
       });
+    });
+  });
+
+  describe('Race Winner', () => {
+    let cars;
+    let race;
+
+    beforeEach(() => {
+      cars = [new Car('jinju'), new Car('grace'), new Car('kendrick')];
+      race = new Race(cars, 5);
+    });
+
+    test('The farthest car is the winner', () => {
+      cars[0].position = 3;
+      cars[1].position = 5;
+      cars[2].position = 2;
+
+      expect(race.getWinners()).toEqual(['grace']);
+    });
+
+    test('Multiple winners should be returned', () => {
+      cars[0].position = 5;
+      cars[1].position = 5;
+      cars[2].position = 2;
+
+      expect(race.getWinners()).toEqual(['jinju', 'grace']);
     });
   });
 });

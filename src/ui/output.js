@@ -13,4 +13,8 @@ export const RaceView = {
       console.table(`${car.name}: ${this.drawTrack(car.position)}`);
     });
   },
+
+  printWinners(winners) {
+    console.log(`우승자: ${winners.join(', ')} 🥳`);
+  },
 };

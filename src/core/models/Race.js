@@ -8,6 +8,14 @@ export class Race {
       throw new Error('At least one car must be provided');
     }
 
+    if (
+      typeof rounds !== 'number' ||
+      rounds <= 0 ||
+      !Number.isInteger(rounds)
+    ) {
+      throw new Error('Rounds must be a positive integer');
+    }
+
     this.cars = cars;
     this.totalRounds = rounds;
   }
@@ -17,7 +25,7 @@ export class Race {
   }
 
   runRound() {
-    this.cars.forEach((car) => car.move());
+    this.cars.forEach((car) => car.move(this.generateRandomNumber()));
     const roundSummary = {
       round: this.currentRound,
       cars: this.cars.map((car) => ({
@@ -28,5 +36,16 @@ export class Race {
 
     this.currentRound += 1;
     return roundSummary;
+  }
+
+  generateRandomNumber() {
+    return Math.floor(Math.random() * 10);
+  }
+
+  getWinners() {
+    const maxPosition = Math.max(...this.cars.map((car) => car.position));
+    return this.cars
+      .filter((car) => car.position === maxPosition)
+      .map((car) => car.name);
   }
 }

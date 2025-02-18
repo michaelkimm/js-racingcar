@@ -10,7 +10,7 @@ export class Car {
     this.name = name;
   }
 
-  move() {
-    this.position += 1;
+  move(randomValue) {
+    if (randomValue >= 4) this.position += 1;
   }
 }

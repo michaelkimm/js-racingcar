@@ -1,8 +1,8 @@
-import { startRace } from './core/services/race.js';
 import readLineAsync from './utils/readLineAsync.js';
 import { TOTAL_ROUNDS } from './constants.js';
 import { validateCarNames } from './validation.js';
 import { RaceView } from './ui/output.js';
+import { RaceController } from './core/controllers/RaceController.js';
 
 // 입출력 예시
 async function play() {
@@ -14,7 +14,9 @@ async function play() {
 
     validateCarNames(carNames);
 
-    startRace(carNames, TOTAL_ROUNDS, RaceView);
+    const controller = new RaceController(RaceView);
+    controller.initializeRace(carNames, TOTAL_ROUNDS);
+    controller.runRace();
   } catch (error) {
     console.error(error.message);
   }
