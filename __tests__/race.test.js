@@ -1,5 +1,5 @@
-import Race from '../src/race.js';
-import Car from '../src/car.js';
+import Race from '../src/domain/race.js';
+import Car from '../src/domain/car.js';
 import generateRandomNumber from '../src/shared/generateRandomNumber.js';
 
 jest.mock('../src/shared/generateRandomNumber');
@@ -22,7 +22,7 @@ describe('자동차 경주', () => {
 
   it('라운드의 궤적 데이터를 저장 하여야 한다.', () => {
     race.startRace();
-    expect(race.getTrajectory()).toHaveLength(count);
+    expect(race.getResult()).toHaveLength(count);
   });
 
   describe('랜덤값이 모두 4 이상일 경우', () => {
@@ -51,7 +51,7 @@ describe('자동차 경주', () => {
       race.startRace();
       const winners = race.getWinner();
 
-      expect(winners).toBe('to, kia, jest');
+      expect(winners).toStrictEqual(['to', 'kia', 'jest']);
     });
   });
 
@@ -60,7 +60,7 @@ describe('자동차 경주', () => {
       let mockRandomNumbers;
       beforeAll(() => {
         const sequence = [4, 2, 3, 4, 2, 3, 4, 2, 3, 4, 2, 3, 4, 2];
-        mockRandomNumbers = jest.fn(() => sequence.shift());
+        mockRandomNumbers = () => sequence.shift();
         generateRandomNumber.mockImplementation(mockRandomNumbers);
       });
 
@@ -72,7 +72,7 @@ describe('자동차 경주', () => {
         race.startRace();
         const winner = race.getWinner();
 
-        expect(winner).toBe('to');
+        expect(winner).toStrictEqual(['to']);
       });
     });
 
@@ -80,7 +80,8 @@ describe('자동차 경주', () => {
       let mockRandomNumbers;
       beforeAll(() => {
         const sequence = [4, 2, 8, 4, 2, 8, 4, 2, 8, 4, 2, 8, 4, 2, 8];
-        mockRandomNumbers = jest.fn(() => sequence.shift());
+        mockRandomNumbers = () => sequence.shift();
+
         generateRandomNumber.mockImplementation(mockRandomNumbers);
       });
 
@@ -91,8 +92,7 @@ describe('자동차 경주', () => {
       it('레이스가 종료되면 첫번 째, 두번 째 자동차만 우승한다.', () => {
         race.startRace();
         const winner = race.getWinner();
-
-        expect(winner).toBe('to, jest');
+        expect(winner).toStrictEqual(['to', 'jest']);
       });
     });
   });
