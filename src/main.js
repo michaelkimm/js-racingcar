@@ -1,10 +1,10 @@
-class Car { 
+export class Car { 
     constructor(name) {
         this.name = name;
         this.location = 0;
     }
 
     move() {
-        this.location += this.location;
+        this.location += 1;
     }
 }
