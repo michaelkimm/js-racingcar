@@ -24,12 +24,13 @@ describe('자동차', () => {
   test('전진할 수 있으며 한 번에 1만큼 전진한다.', () => {
     // given
     let car = new Car('anyName');
-    expect(car.position).toEqual(0);
+    const beforePosition = car.position;
 
     // when
     car.go();
 
     // then
-    expect(car.position).toEqual(1);
+    const afterPosition = car.position;
+    expect(afterPosition).toEqual(beforePosition + 1);
   })
 })
