@@ -1,5 +1,5 @@
-class Car {
-  pos = 0;
+export class Car {
+  position = 0;
 
   constructor(name) {
     this.name = name;
