@@ -6,7 +6,7 @@ export class Car {
   }
 
   go () {
-    this.pos += 1;
-    return this.pos;
+    this.position += 1;
+    return this.position;
   }
 }
