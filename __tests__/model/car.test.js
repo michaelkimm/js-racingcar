@@ -3,8 +3,7 @@ import {Car} from '../../src/model/car';
 describe('자동차', () => {
 
   describe('이름을 상태로 가진다.', () => {
-    const NAME_ERROR_MSG = '자동차 이름은 1글자 이상, 5글자 이하여야 합니다.';
-
+    
     test('생성자로 설정할 수 있다.', () => {
       // given
       let carName = "둥둥이";
@@ -25,7 +24,7 @@ describe('자동차', () => {
       if (expected) {
         expect(() => {new Car(name)}).not.toThrow();
       } else {
-        expect(() => {new Car(name)}).toThrow(NAME_ERROR_MSG);
+        expect(() => {new Car(name)}).toThrow('자동차 이름은 1글자 이상, 5글자 이하여야 합니다.');
       }
     })
   })
