@@ -1,12 +1,16 @@
 export class Car {
-  position = 0;
+  #position = 0;
 
   constructor(name) {
     this.name = name;
   }
 
   go () {
-    this.position += 1;
-    return this.position;
+    this.#position += 1;
+    return this.#position;
+  }
+
+  get position() {
+    return this.#position;
   }
 }
