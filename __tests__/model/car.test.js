@@ -2,7 +2,7 @@ import { Car } from '../../src/model/car';
 
 describe('자동차', () => {
 
-  describe('이름을 상태로 가진다.', () => {
+  describe('이름', () => {
 
     test('생성자로 설정할 수 있다.', () => {
       // given
@@ -15,17 +15,14 @@ describe('자동차', () => {
       expect(car.name).toEqual(carName);
     })
 
-    test.each([
-      ["", false],
-      ["12345", true],
-      ["123456", false]
-    ])('길이는 1이상 5이하여야 한다.', (name, expected) => {
-      // when, then
-      if (expected) {
-        expect(() => { new Car(name) }).not.toThrow();
-      } else {
-        expect(() => { new Car(name) }).toThrow(new Error('자동차 이름은 1글자 이상, 5글자 이하여야 합니다.'));
-      }
+    test('길이는 1~5자 이하여야 한다.', () => {
+      expect(() => { new Car("12345") }).not.toThrow();
+    })
+
+    test.each(
+      ["", "123456"]
+    )('길이는 1이상 5이하여야 한다.', name => {
+      expect(() => { new Car(name) }).toThrow(new Error('자동차 이름은 1글자 이상, 5글자 이하여야 합니다.'));
     })
   })
 
