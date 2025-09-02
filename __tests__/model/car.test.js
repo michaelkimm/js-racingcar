@@ -1,4 +1,5 @@
 import { Car } from '../../src/model/car';
+import { MESSAGE } from '../../src/constant/error_message';
 
 describe('자동차', () => {
 
@@ -22,7 +23,7 @@ describe('자동차', () => {
     test.each(
       ["", "123456"]
     )('길이가 5이상이거나 비어있으면 에러가 발생한다.', name => {
-      expect(() => { new Car(name) }).toThrow(new Error('자동차 이름은 1글자 이상, 5글자 이하여야 합니다.'));
+      expect(() => { new Car(name) }).toThrow(new Error(MESSAGE.CAR_NAME_MUST_BE_SHORTER_THAN_5_LENGTH));
     })
   })
 
